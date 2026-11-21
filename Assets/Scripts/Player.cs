@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     private float _rotationY;
     private bool _isGrounded;
     private Vector3 _moveDirection;
+    private bool _jumpRequested;
 
     // ------------------------------------------------------------------------
     // You don't need to code anything in this method :)
@@ -47,6 +48,11 @@ public class Player : MonoBehaviour
             transform.forward * vertical + transform.right * horizontal,
             1f
         );
+
+        if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
+        {
+            _jumpRequested = true;
+        }
         
 
         // This rotates the ball as you move.
@@ -61,7 +67,32 @@ public class Player : MonoBehaviour
     {
         Vector3 velocity = _moveDirection * _moveSpeed;
         velocity.y = _playerRigidbody.linearVelocity.y;
+
+        if (_jumpRequested && _isGrounded)
+        {
+            velocity.y = _jump;
+            _isGrounded = false;
+        }
+
+        _jumpRequested = false;
         _playerRigidbody.linearVelocity = velocity;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = true;
+            Debug.Log("Player landed");
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = false;
+        }
     }
 
     // ------------------------------------------------------------------------
