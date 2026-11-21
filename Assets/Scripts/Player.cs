@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     private float _rotationX;
     private float _rotationY;
     private bool _isGrounded;
+    private Vector3 _moveDirection;
 
     // ------------------------------------------------------------------------
     // You don't need to code anything in this method :)
@@ -42,6 +43,10 @@ public class Player : MonoBehaviour
         //      and horizontal input.
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
+        _moveDirection = Vector3.ClampMagnitude(
+            transform.forward * vertical + transform.right * horizontal,
+            1f
+        );
         
 
         // This rotates the ball as you move.
@@ -51,6 +56,12 @@ public class Player : MonoBehaviour
             (vertical * transform.right))
             * _torqueForce
         );
+    }
+    private void FixedUpdate()
+    {
+        Vector3 velocity = _moveDirection * _moveSpeed;
+        velocity.y = _playerRigidbody.linearVelocity.y;
+        _playerRigidbody.linearVelocity = velocity;
     }
 
     // ------------------------------------------------------------------------
