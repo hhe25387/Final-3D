@@ -26,7 +26,7 @@ public class Katamari : MonoBehaviour
         Collectable collectable =
             otherCollider.GetComponentInParent<Collectable>();
 
-        if (collectable == null ||
+        if (collectable == null || !collectable.CanCollect ||
             _katamariCollection.Contains(collectable))
         {
             return;
@@ -50,8 +50,7 @@ public class Katamari : MonoBehaviour
             return;
         }
 
-        _sphereTransform.localScale += Vector3.one * _radiusGrowAmount;
-        SetSpherePosition();
+        ResizeSphere(_radiusGrowAmount);
 
         _katamariCollection.Add(collectable);
         collectable.Collect(_sphereTransform);
@@ -78,18 +77,40 @@ public class Katamari : MonoBehaviour
         Collectable collectable = _katamariCollection[index];
         _katamariCollection.RemoveAt(index);
 
+        // Eject to the side, outside the ball, rather than behind the camera.
+        Vector3 side = transform.parent.right;
+        float clearance = _katamariCollider.bounds.extents.magnitude
+            + collectable.CollisionRadius + 0.2f;
         Vector3 dropPosition = _sphereTransform.position
-            + Vector3.up * (_katamariCollider.bounds.extents.y + 1f);
+            + side * clearance + Vector3.up * clearance;
 
-        Vector3 launchImpulse = Vector3.up * 5f
-            - transform.parent.forward * 2f;
+        Vector3 launchImpulse = Vector3.up * 4f + side * 3f;
 
         collectable.Drop(dropPosition, launchImpulse);
 
-        _sphereTransform.localScale -= Vector3.one * _radiusGrowAmount;
-        SetSpherePosition();
+        ResizeSphere(-_radiusGrowAmount);
 
         _unequipAudioSource.Play();
+    }
+
+    private void ResizeSphere(float amount)
+    {
+        float oldScale = _sphereTransform.localScale.x;
+        _sphereTransform.localScale += Vector3.one * amount;
+
+        float newScale = _sphereTransform.localScale.x;
+        float compensation = oldScale / newScale;
+
+        // Preserve item size while the uniformly scaled sphere changes size.
+        foreach (Collectable item in _katamariCollection)
+        {
+            if (item != null)
+            {
+                item.transform.localScale *= compensation;
+            }
+        }
+
+        SetSpherePosition();
     }
 
     // ------------------------------------------------------------------------

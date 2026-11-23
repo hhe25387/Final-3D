@@ -30,6 +30,7 @@ public class GameController : MonoBehaviour
     // You don't need to code anything in this method :)
     private void Start()
     {
+        Time.timeScale = 1f;
         SetGameEnabled(false);
         UpdatePointsText();
         _timeRemaining = _maxTimeSeconds;
@@ -55,6 +56,7 @@ public class GameController : MonoBehaviour
     // ------------------------------------------------------------------------
     public void StartGame()
     {
+        Time.timeScale = 1f;
         _startGameUI.SetActive(false);
         _gameOverUI.SetActive(false);
         
@@ -69,6 +71,7 @@ public class GameController : MonoBehaviour
     // You don't need to code anything in this method :)
     public void RestartGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
 
@@ -87,6 +90,7 @@ public class GameController : MonoBehaviour
 
         _totalText.text = $"Total: {total}";
         _gameOverUI.SetActive(true);
+        Time.timeScale = 0f;
     }
 
     // ------------------------------------------------------------------------

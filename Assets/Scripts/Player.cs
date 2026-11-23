@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     // You don't need to code anything in this method :)
     private void Start()
     {
+        _playerRigidbody.constraints |= RigidbodyConstraints.FreezeRotationY;
         Cursor.lockState = CursorLockMode.Locked;
         _cameraTrans = Camera.main.transform;
     }
@@ -42,8 +43,11 @@ public class Player : MonoBehaviour
 
         // Code the player's left/right movement and jump using the veritcal
         //      and horizontal input.
-        float vertical = Input.GetAxis("Vertical");
-        float horizontal = Input.GetAxis("Horizontal");
+        // Read only the keyboard so joystick axes cannot move the player.
+        float vertical = ReadKeyboardAxis(KeyCode.S, KeyCode.DownArrow,
+            KeyCode.W, KeyCode.UpArrow);
+        float horizontal = ReadKeyboardAxis(KeyCode.A, KeyCode.LeftArrow,
+            KeyCode.D, KeyCode.RightArrow);
         _moveDirection = Vector3.ClampMagnitude(
             transform.forward * vertical + transform.right * horizontal,
             1f
@@ -67,6 +71,15 @@ public class Player : MonoBehaviour
             * _torqueForce
         );
     }
+    private static float ReadKeyboardAxis(KeyCode negative, KeyCode negativeArrow,
+        KeyCode positive, KeyCode positiveArrow)
+    {
+        float value = 0f;
+        if (Input.GetKey(negative) || Input.GetKey(negativeArrow)) value -= 1f;
+        if (Input.GetKey(positive) || Input.GetKey(positiveArrow)) value += 1f;
+        return value;
+    }
+
     private void FixedUpdate()
     {
         Vector3 velocity = _moveDirection * _moveSpeed;
@@ -80,6 +93,25 @@ public class Player : MonoBehaviour
 
         _jumpRequested = false;
         _playerRigidbody.linearVelocity = velocity;
+    }
+
+    private void OnDisable()
+    {
+        _moveDirection = Vector3.zero;
+        _jumpRequested = false;
+
+        if (_playerRigidbody != null)
+        {
+            Vector3 velocity = _playerRigidbody.linearVelocity;
+            velocity.x = 0f;
+            velocity.z = 0f;
+            _playerRigidbody.linearVelocity = velocity;
+        }
+
+        if (_animator != null)
+        {
+            _animator.SetBool("isMoving", false);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
