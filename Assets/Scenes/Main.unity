@@ -1000,6 +1000,10 @@ MonoBehaviour:
   _gameOverUI: {fileID: 291995881}
   _timerText: {fileID: 1078997498}
   _pointsText: {fileID: 7662076}
+  _finalCommonText: {fileID: 908306544}
+  _finalUncommonText: {fileID: 1399285091}
+  _finalRareText: {fileID: 2121748622}
+  _totalText: {fileID: 795678961}
 --- !u!1 &795678959
 GameObject:
   m_ObjectHideFlags: 0

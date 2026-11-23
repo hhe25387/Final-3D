@@ -12,6 +12,10 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject _gameOverUI;
     [SerializeField] private TMP_Text _timerText;
     [SerializeField] private TMP_Text _pointsText;
+    [SerializeField] private TMP_Text _finalCommonText;
+    [SerializeField] private TMP_Text _finalUncommonText;
+    [SerializeField] private TMP_Text _finalRareText;
+    [SerializeField] private TMP_Text _totalText;
 
     // Add member variables to store references to all of the UI text.
 
@@ -72,9 +76,17 @@ public class GameController : MonoBehaviour
     private void EndGame()
     {
         SetGameEnabled(false);
-        _gameOverUI.SetActive(true);
 
-        // Update the final score text in the game over UI.
+        _finalCommonText.text = _commonPoints.ToString();
+        _finalUncommonText.text = _uncommonPoints.ToString();
+        _finalRareText.text = _rarePoints.ToString();
+
+        int total = _commonPoints
+            + _uncommonPoints * 2
+            + _rarePoints * 3;
+
+        _totalText.text = $"Total: {total}";
+        _gameOverUI.SetActive(true);
     }
 
     // ------------------------------------------------------------------------
