@@ -1,6 +1,11 @@
 using UnityEngine;
 
-// Add an enum to represent an item's rarity.
+public enum ItemRarity
+{
+    Common,
+    Uncommon,
+    Rare
+}
 
 public class Collectable : MonoBehaviour
 {
@@ -10,6 +15,7 @@ public class Collectable : MonoBehaviour
     private Collider[] _colliders;
     private Rigidbody _rigidbody;
     private GameController _gameController;
+    [SerializeField] private ItemRarity _rarity;
 
     // ------------------------------------------------------------------------
     private void Start()
@@ -33,7 +39,7 @@ public class Collectable : MonoBehaviour
         transform.SetParent(katamariSphere);
         transform.position = katamariSphere.position;
 
-        _gameController.CollectItem();
+        _gameController.CollectItem(_rarity);
     }
 
     // ------------------------------------------------------------------------
@@ -54,6 +60,6 @@ public class Collectable : MonoBehaviour
 
         _rigidbody.AddForce(launchImpulse, ForceMode.Impulse);
 
-        _gameController.RemoveItem();
+        _gameController.RemoveItem(_rarity);
     }
 }

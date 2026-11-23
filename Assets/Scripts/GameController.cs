@@ -2,6 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+
 public class GameController : MonoBehaviour
 {
     [SerializeField] private Player _player;
@@ -9,6 +11,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject _startGameUI;
     [SerializeField] private GameObject _gameOverUI;
     [SerializeField] private TMP_Text _timerText;
+    [SerializeField] private TMP_Text _pointsText;
 
     // Add member variables to store references to all of the UI text.
 
@@ -85,30 +88,54 @@ public class GameController : MonoBehaviour
 
     // ------------------------------------------------------------------------
     // Add a paramter to this method to represent the item's rarity.
-    public void CollectItem ()
+    public void CollectItem(ItemRarity rarity)
     {
-        // Using a SWITCH STATEMENT,
-        // based on the item's rarity, update the appropriate points variable.
-        
+        switch (rarity)
+        {
+            case ItemRarity.Common:
+                _commonPoints++;
+                break;
+
+            case ItemRarity.Uncommon:
+                _uncommonPoints++;
+                break;
+
+            case ItemRarity.Rare:
+                _rarePoints++;
+                break;
+        }
 
         UpdatePointsText();
     }
 
     // ------------------------------------------------------------------------
-    public void RemoveItem ()
+    public void RemoveItem(ItemRarity rarity)
     {
-        // Using a SWITCH STATEMENT,
-        // based on the item's rarity, update the appropriate points variable.
-        
+        switch (rarity)
+        {
+            case ItemRarity.Common:
+                _commonPoints = Mathf.Max(0, _commonPoints - 1);
+                break;
+
+            case ItemRarity.Uncommon:
+                _uncommonPoints = Mathf.Max(0, _uncommonPoints - 1);
+                break;
+
+            case ItemRarity.Rare:
+                _rarePoints = Mathf.Max(0, _rarePoints - 1);
+                break;
+        }
+
         UpdatePointsText();
     }
 
-    // ------------------------------------------------------------------------
     private void UpdatePointsText()
     {
-        // Update your points text.
+        _pointsText.text =
+            $"Common: {_commonPoints} ({_commonPoints} pts)\n" +
+            $"Uncommon: {_uncommonPoints} ({_uncommonPoints * 2} pts)\n" +
+            $"Rare: {_rarePoints} ({_rarePoints * 3} pts)";
     }
-
     private void UpdateTimerText()
     {
         int seconds = Mathf.CeilToInt(Mathf.Max(0f, _timeRemaining));
