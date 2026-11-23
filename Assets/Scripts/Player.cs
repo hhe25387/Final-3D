@@ -49,6 +49,8 @@ public class Player : MonoBehaviour
             1f
         );
 
+        _animator.SetBool("isMoving", _moveDirection.sqrMagnitude > 0.01f);
+
         if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             _jumpRequested = true;

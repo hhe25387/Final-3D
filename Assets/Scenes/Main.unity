@@ -3213,6 +3213,7 @@ GameObject:
   - component: {fileID: 7777780150010006646}
   - component: {fileID: 7777780150010006648}
   - component: {fileID: 7777780150010006647}
+  - component: {fileID: 7777780150010006649}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3302,7 +3303,7 @@ MonoBehaviour:
   _torqueForce: 2
   _ballRigidbody: {fileID: 1407490311}
   _playerRigidbody: {fileID: 7777780150010006647}
-  _animator: {fileID: 0}
+  _animator: {fileID: 7777780150010006649}
   _moveSpeed: 6
   _jump: 5
   _mouseSensitivity: 5
@@ -3356,6 +3357,28 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!95 &7777780150010006649
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6970421558965573327}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 790a59d5c287faa44a67a04ce02dc54c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &8441510213488159696
 Transform:
   m_ObjectHideFlags: 0
