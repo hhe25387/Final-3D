@@ -51,6 +51,8 @@ public class Player : MonoBehaviour
 
         _animator.SetBool("isMoving", _moveDirection.sqrMagnitude > 0.01f);
 
+        _animator.SetBool("isGrounded", _isGrounded);
+
         if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             _jumpRequested = true;
