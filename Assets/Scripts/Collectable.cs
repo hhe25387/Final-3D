@@ -12,23 +12,28 @@ public class Collectable : MonoBehaviour
     private GameController _gameController;
 
     // ------------------------------------------------------------------------
-    private void Start ()
+    private void Start()
     {
-        _gameController = FindFirstObjectByType<GameController>();
+    _colliders = GetComponentsInChildren<Collider>();
+    _rigidbody = GetComponent<Rigidbody>();
+    _gameController = FindFirstObjectByType<GameController>();
     }
 
     // ------------------------------------------------------------------------
     // You might want to add parameters to this method.
-    public void Collect ()
+    public void Collect(Transform katamariSphere)
     {
-        // Set the new parent and position of the Collectable.
-        // Disable all of this object's colliders.
+        foreach (Collider itemCollider in _colliders)
+        {
+            itemCollider.enabled = false;
+        }
 
-        // This line sets the rigidbody to kinematic so it'll stop using physics.
-        // (You don't need to change this.)
         _rigidbody.isKinematic = true;
 
-        // Tell the GameController that we collected this item.
+        transform.SetParent(katamariSphere);
+        transform.position = katamariSphere.position;
+
+        _gameController.CollectItem();
     }
 
     // ------------------------------------------------------------------------

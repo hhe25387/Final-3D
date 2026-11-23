@@ -9,6 +9,7 @@ public class Katamari : MonoBehaviour
     [SerializeField] private float _radiusGrowAmount = 1.0f;
     [SerializeField] private Collider _katamariCollider;
     [SerializeField] private Transform _sphereTransform;
+    private List<Collectable> _katamariCollection = new List<Collectable>();
 
     // Add a member variable to represent a LIST of all of the Collectable 
     //      objects we've collected named _katamariCollection.
@@ -22,26 +23,46 @@ public class Katamari : MonoBehaviour
     // ------------------------------------------------------------------------
     private void OnTriggerEnter(Collider otherCollider)
     {
-        // Find the Collectable Component on the object we collided with.
-        // Modify this if statement to ALSO check and make sure the Collectable
-        //      actually exists, since we might collide with other kinds of objects too.
+        Collectable collectable =
+            otherCollider.GetComponentInParent<Collectable>();
 
-        if(otherCollider.bounds.extents.magnitude <= _katamariCollider.bounds.extents.magnitude) {
-            // Grow the SPHERE OBJECT, which should be a CHILD of the Katamari object,
-            //      by _radiusGrowAmount.
-            // AFTER growing the sphere, call SetSpherePosition() to update the sphere's position.
-
-            // Add the new Collectable to our list of hit objects.
-            
-
-            // Tell the Collectable that we want to collect it.
-
-            // If the object has an NPC Component, let it know about being collected
-            //      by calling PickUp on the NPC.
-            
-
-            _equipAudioSource.Play();
+        if (collectable == null ||
+            _katamariCollection.Contains(collectable))
+        {
+            return;
         }
+
+        Collider solidCollider = null;
+
+        foreach (Collider candidate in collectable.GetComponentsInChildren<Collider>())
+        {
+            if (!candidate.isTrigger)
+            {
+                solidCollider = candidate;
+                break;
+            }
+        }
+
+        if (solidCollider == null ||
+            solidCollider.bounds.extents.magnitude >=
+            _katamariCollider.bounds.extents.magnitude)
+        {
+            return;
+        }
+
+        _sphereTransform.localScale += Vector3.one * _radiusGrowAmount;
+        SetSpherePosition();
+
+        _katamariCollection.Add(collectable);
+        collectable.Collect(_sphereTransform);
+
+        NPC npc = collectable.GetComponent<NPC>();
+        if (npc != null)
+        {
+            npc.PickUp();
+        }
+
+        _equipAudioSource.Play();
     }
 
     // ------------------------------------------------------------------------
@@ -72,7 +93,6 @@ public class Katamari : MonoBehaviour
     // This method sets up the sphere to be in the corret position in front
     //      of the player, and ensures all of the objects inside the katamari
     //      remain in its center.
-    /*
     private void SetSpherePosition ()
     {
         // place the sphere in front of the player
@@ -93,5 +113,4 @@ public class Katamari : MonoBehaviour
             }
         }
     }
-    */
 }
