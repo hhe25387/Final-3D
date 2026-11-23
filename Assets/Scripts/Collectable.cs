@@ -38,22 +38,22 @@ public class Collectable : MonoBehaviour
 
     // ------------------------------------------------------------------------
     // You might want to add parameters to this method.
-    public void Drop ()
+    public void Drop(Vector3 dropPosition, Vector3 launchImpulse)
     {
-        // Reset this object's parent so it's no longer attached to the Katamari,
-        //  and give it a new position ABOVE the Katamari sphere.
-        
+        transform.SetParent(null);
+        transform.position = dropPosition;
 
-        // Enable all of this object's colliders.
-        
-
-        // This line sets the rigidbody to kinematic so it'll start using physics again.
-        // (You don't need to change this.)
         _rigidbody.isKinematic = false;
+        _rigidbody.linearVelocity = Vector3.zero;
+        _rigidbody.angularVelocity = Vector3.zero;
 
-        // Add a force to the rigidbody to make it fly upwards.
+        foreach (Collider itemCollider in _colliders)
+        {
+            itemCollider.enabled = true;
+        }
 
-        // Tell the UI that we removed this item.
-        
+        _rigidbody.AddForce(launchImpulse, ForceMode.Impulse);
+
+        _gameController.RemoveItem();
     }
 }

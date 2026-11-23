@@ -66,24 +66,30 @@ public class Katamari : MonoBehaviour
     }
 
     // ------------------------------------------------------------------------
-    private void OnCollisionEnter (Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
-        // Modify this if statement to ALSO check if we have any entries in our
-        //  katamari collection.
-        if(collision.gameObject.tag.Equals("Obstacle"))
+        if (!collision.gameObject.CompareTag("Obstacle") ||
+            _katamariCollection.Count == 0)
         {
-            // SHRINK the katamari SPHERE by _radiusGrowAmount.
-            // AFTER changing its size, call SetSpherePosition() to fix its position.
-            
-
-            // Grab a RANDOM member of our katamari collection.
-            // Generate a position to drop it at- preferably by launching it far above the katamari sphere.
-            // Then, DROP that Collectable.
-
-            // Finally, remove the entry from the _katamariCollection.
-
-            _unequipAudioSource.Play();
+            return;
         }
+
+        int index = Random.Range(0, _katamariCollection.Count);
+        Collectable collectable = _katamariCollection[index];
+        _katamariCollection.RemoveAt(index);
+
+        Vector3 dropPosition = _sphereTransform.position
+            + Vector3.up * (_katamariCollider.bounds.extents.y + 1f);
+
+        Vector3 launchImpulse = Vector3.up * 5f
+            - transform.parent.forward * 2f;
+
+        collectable.Drop(dropPosition, launchImpulse);
+
+        _sphereTransform.localScale -= Vector3.one * _radiusGrowAmount;
+        SetSpherePosition();
+
+        _unequipAudioSource.Play();
     }
 
     // ------------------------------------------------------------------------
