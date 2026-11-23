@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private float _maxTimeSeconds;
     [SerializeField] private GameObject _startGameUI;
     [SerializeField] private GameObject _gameOverUI;
+    [SerializeField] private TMP_Text _timerText;
 
     // Add member variables to store references to all of the UI text.
 
@@ -24,6 +25,8 @@ public class GameController : MonoBehaviour
     {
         SetGameEnabled(false);
         UpdatePointsText();
+        _timeRemaining = _maxTimeSeconds;
+        UpdateTimerText();
     }
 
     // ------------------------------------------------------------------------
@@ -33,7 +36,7 @@ public class GameController : MonoBehaviour
         {
             _timeRemaining -= Time.deltaTime;
             
-            // Update the game timer text.
+             UpdateTimerText();
 
             if (_timeRemaining <= 0)
             {
@@ -52,7 +55,7 @@ public class GameController : MonoBehaviour
 
         _timeRemaining = _maxTimeSeconds;
         
-        // Update the game timer text.
+        UpdateTimerText();
     }
 
     // ------------------------------------------------------------------------
@@ -104,5 +107,11 @@ public class GameController : MonoBehaviour
     private void UpdatePointsText()
     {
         // Update your points text.
+    }
+
+    private void UpdateTimerText()
+    {
+        int seconds = Mathf.CeilToInt(Mathf.Max(0f, _timeRemaining));
+        _timerText.text = $"Time: {seconds}";
     }
 }
