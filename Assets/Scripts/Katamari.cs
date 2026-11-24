@@ -10,7 +10,13 @@ public class Katamari : MonoBehaviour
     [SerializeField] private Collider _katamariCollider;
     [SerializeField] private Transform _sphereTransform;
     private Rigidbody _ballRigidbody;
+    private Vector3 _initialSphereScale;
     private List<Collectable> _katamariCollection = new List<Collectable>();
+
+    private void Awake()
+    {
+        _initialSphereScale = _sphereTransform.localScale;
+    }
 
     private void Start()
     {
@@ -67,9 +73,8 @@ public class Katamari : MonoBehaviour
             return;
         }
 
-        ResizeSphere(_radiusGrowAmount);
-
         _katamariCollection.Add(collectable);
+        UpdateSphereSize();
         collectable.Collect(_sphereTransform);
 
         NPC npc = collectable.GetComponent<NPC>();
@@ -111,31 +116,46 @@ public class Katamari : MonoBehaviour
 
         Vector3 launchImpulse = Vector3.up * 4f + side * 3f;
 
-        collectable.Drop(dropPosition, launchImpulse);
-
-        ResizeSphere(-_radiusGrowAmount);
+        // Keep size consistent with the collection even if another component
+        // throws while the detached item updates its score or physics.
+        try
+        {
+            collectable.Drop(dropPosition, launchImpulse);
+        }
+        finally
+        {
+            UpdateSphereSize();
+        }
 
         _unequipAudioSource.Play();
     }
 
-    private void ResizeSphere(float amount)
+    private void UpdateSphereSize()
     {
-        float oldScale = _sphereTransform.localScale.x;
-        _sphereTransform.localScale += Vector3.one * amount;
+        Vector3 oldScale = _sphereTransform.localScale;
+        Vector3 newScale = _initialSphereScale
+            + Vector3.one * (_radiusGrowAmount * _katamariCollection.Count);
+        _sphereTransform.localScale = newScale;
 
-        float newScale = _sphereTransform.localScale.x;
-        float compensation = oldScale / newScale;
+        Vector3 compensation = new Vector3(
+            oldScale.x / newScale.x,
+            oldScale.y / newScale.y,
+            oldScale.z / newScale.z);
 
-        // Preserve item size while the uniformly scaled sphere changes size.
         foreach (Collectable item in _katamariCollection)
         {
-            if (item != null)
+            // A newly collected item has not been parented yet and already
+            // keeps its world size when Collect() parents it to the ball.
+            if (item != null && item.transform.parent == _sphereTransform)
             {
-                item.transform.localScale *= compensation;
+                item.transform.localScale = Vector3.Scale(
+                    item.transform.localScale, compensation);
             }
         }
 
         SetSpherePosition();
+        Debug.Log($"[Katamari] Items: {_katamariCollection.Count}, "
+            + $"sphere scale: {oldScale.x:F2} -> {newScale.x:F2}", this);
     }
 
     // Keep the collider centered on its rotating Rigidbody. Moving only the

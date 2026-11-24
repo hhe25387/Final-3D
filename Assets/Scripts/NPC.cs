@@ -157,7 +157,14 @@ public class NPC : MonoBehaviour
         // The sound needs its own object so destroying the NPC does not cut it off.
         if (_explosionSound != null)
         {
-            AudioSource.PlayClipAtPoint(_explosionSound, transform.position);
+            GameObject soundObject = new GameObject("NPC Explosion Sound");
+            AudioSource source = soundObject.AddComponent<AudioSource>();
+            source.playOnAwake = false;
+            source.clip = _explosionSound;
+            source.spatialBlend = 0f;
+            source.volume = 0.8f;
+            source.Play();
+            Destroy(soundObject, _explosionSound.length + 0.1f);
         }
 
         Destroy(gameObject);
