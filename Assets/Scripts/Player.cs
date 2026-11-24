@@ -16,6 +16,14 @@ public class Player : MonoBehaviour
     private bool _isGrounded;
     private Vector3 _moveDirection;
     private bool _jumpRequested;
+    private Vector3 _spawnPosition;
+    private Katamari _katamari;
+
+    private void Awake()
+    {
+        _spawnPosition = transform.position;
+        _katamari = _ballRigidbody.GetComponent<Katamari>();
+    }
 
     // ------------------------------------------------------------------------
     // You don't need to code anything in this method :)
@@ -82,6 +90,20 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_playerRigidbody.position.y < -10f)
+        {
+            _playerRigidbody.position = _spawnPosition;
+            _playerRigidbody.linearVelocity = Vector3.zero;
+            _playerRigidbody.angularVelocity = Vector3.zero;
+            _moveDirection = Vector3.zero;
+            _jumpRequested = false;
+            _isGrounded = false;
+            _animator.SetBool("isMoving", false);
+            _animator.SetBool("isGrounded", false);
+            _katamari.RecoverToPlayer();
+            return;
+        }
+
         Vector3 velocity = _moveDirection * _moveSpeed;
         velocity.y = _playerRigidbody.linearVelocity.y;
 

@@ -9,23 +9,40 @@ public class Katamari : MonoBehaviour
     [SerializeField] private float _radiusGrowAmount = 1.0f;
     [SerializeField] private Collider _katamariCollider;
     [SerializeField] private Transform _sphereTransform;
+    private Rigidbody _ballRigidbody;
     private List<Collectable> _katamariCollection = new List<Collectable>();
 
-    // Add a member variable to represent a LIST of all of the Collectable 
-    //      objects we've collected named _katamariCollection.
-    // Then, uncomment the code in SetSpherePosition().
+    private void Start()
+    {
+        _ballRigidbody = GetComponent<Rigidbody>();
+        _ballRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        SetSpherePosition();
+    }
 
-    // ------------------------------------------------------------------------
-    // There's probably a member variable you need to declare in a built-in
-    //      Unity method that runs once, before Update starts...
-    
+    private void FixedUpdate()
+    {
+        // If only the ball falls, restore it beside the player.
+        // Player handles restoring both bodies when the player also falls.
+        if (_ballRigidbody.position.y < -10f && transform.parent.position.y >= -10f)
+        {
+            RecoverToPlayer();
+        }
+    }
 
-    // ------------------------------------------------------------------------
+    public void RecoverToPlayer()
+    {
+        _ballRigidbody.linearVelocity = Vector3.zero;
+        _ballRigidbody.angularVelocity = Vector3.zero;
+        SetSpherePosition();
+    }
+
     private void OnTriggerEnter(Collider otherCollider)
     {
-        Collectable collectable =
-            otherCollider.GetComponentInParent<Collectable>();
+        TryCollect(otherCollider.GetComponentInParent<Collectable>());
+    }
 
+    private void TryCollect(Collectable collectable)
+    {
         if (collectable == null || !collectable.CanCollect ||
             _katamariCollection.Contains(collectable))
         {
@@ -67,6 +84,14 @@ public class Katamari : MonoBehaviour
     // ------------------------------------------------------------------------
     private void OnCollisionEnter(Collision collision)
     {
+        // A solid collider can stop the ball before it reaches an item's trigger.
+        Collectable item = collision.collider.GetComponentInParent<Collectable>();
+        if (item != null)
+        {
+            TryCollect(item);
+            return;
+        }
+
         if (!collision.gameObject.CompareTag("Obstacle") ||
             _katamariCollection.Count == 0)
         {
@@ -113,19 +138,17 @@ public class Katamari : MonoBehaviour
         SetSpherePosition();
     }
 
-    // ------------------------------------------------------------------------
-    // Uncomment this method by removing the /* and */ AFTER you've added the
-    //      _katamariCollection member variable.
-    // You don't need to code anything else in this method :)
-    // This method sets up the sphere to be in the corret position in front
-    //      of the player, and ensures all of the objects inside the katamari
-    //      remain in its center.
-    private void SetSpherePosition ()
+    // Keep the collider centered on its rotating Rigidbody. Moving only the
+    // child sphere makes it orbit the body and swing through the ground.
+    private void SetSpherePosition()
     {
-        // place the sphere in front of the player
-        _sphereTransform.position = transform.parent.position +
-                transform.parent.up * _sphereTransform.lossyScale.x/2.0f +
-                transform.parent.forward * (_sphereTransform.lossyScale.x/2.0f + 1.0f);
+        _sphereTransform.localPosition = Vector3.zero;
+        float radius = _katamariCollider.bounds.extents.y;
+        Vector3 center = transform.parent.position
+            + transform.parent.up * radius
+            + transform.parent.forward * (radius + 1f);
+
+        _ballRigidbody.position = center;
 
         // move all of the katamari objects to the new katamari center
         foreach(Collectable collectable in _katamariCollection)

@@ -163,7 +163,8 @@ MonoBehaviour:
   _runDistance: 20
   _animator: {fileID: 6915523022203900631}
   _navAgent: {fileID: 8273225062263208430}
-  _explosionVFX: {fileID: 7516083773264409914, guid: c107feef35ba54f7699bc116cc32f00e, type: 3}
+  _explosionVFX: {fileID: 5083999615015703458, guid: e1b61d90cec7748ba842532e44d6317a, type: 3}
+  _explosionSound: {fileID: 8300000, guid: a652877b012108e41871f867ada9f176, type: 3}
 --- !u!136 &3990750394803482780
 CapsuleCollider:
   m_ObjectHideFlags: 0

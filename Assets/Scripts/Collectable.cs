@@ -68,6 +68,12 @@ public class Collectable : MonoBehaviour
         transform.localScale = _originalScale;
         transform.position = dropPosition;
 
+        NPC npc = GetComponent<NPC>();
+        if (npc != null)
+        {
+            npc.OnEjected();
+        }
+
         _rigidbody.isKinematic = false;
         _rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         _rigidbody.linearVelocity = Vector3.zero;
